@@ -1,0 +1,1074 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050505">
+<title>YTS CV BUILDER | YASSER TECH SOLUTIONS</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+:root{
+ --bg:#070707;--panel:#111;--panel2:#181818;
+ --line:#292929;--white:#fff;--muted:#999;
+ --radius:17px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:white;font-family:Arial,Helvetica,sans-serif;min-height:100vh}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+
+/* WELCOME SCREEN */
+#welcomeScreen{
+ position:fixed;inset:0;z-index:1000;
+ display:flex;justify-content:center;align-items:center;
+ padding:20px;overflow:auto;background:#050505;
+}
+#welcomeScreen:before,#welcomeScreen:after{
+ content:"";position:absolute;width:380px;height:380px;
+ border-radius:50%;filter:blur(100px);opacity:.23;
+ pointer-events:none;animation:glow 9s infinite alternate ease-in-out;
+}
+#welcomeScreen:before{background:#fff;top:-150px;left:-120px}
+#welcomeScreen:after{background:#888;bottom:-160px;right:-120px;animation-delay:2s}
+@keyframes glow{
+ from{transform:translate(0,0) scale(.8)}
+ to{transform:translate(100px,80px) scale(1.3)}
+}
+.particles{
+ position:absolute;inset:0;
+ background-image:radial-gradient(#ffffff55 1px,transparent 1px),radial-gradient(#ffffff22 1px,transparent 1px);
+ background-size:65px 65px,110px 110px;
+ animation:particles 25s linear infinite;opacity:.35;
+}
+@keyframes particles{
+ from{background-position:0 0,0 0}
+ to{background-position:500px 500px,-300px 300px}
+}
+.welcome-card{
+ position:relative;z-index:2;width:min(430px,100%);
+ padding:34px 25px;background:#101010ed;
+ border:1px solid #444;border-radius:25px;
+ box-shadow:0 20px 80px #000;text-align:center;
+ backdrop-filter:blur(20px);animation:welcomeIn 1s ease;
+}
+@keyframes welcomeIn{
+ from{opacity:0;transform:translateY(35px)}
+ to{opacity:1;transform:translateY(0)}
+}
+.welcome-avatar{
+ width:105px;height:105px;object-fit:cover;
+ border-radius:50%;border:3px solid white;
+ padding:4px;margin-bottom:17px;box-shadow:0 0 35px #ffffff44;
+}
+.welcome-card h1{font-size:25px;letter-spacing:2px;margin-bottom:8px}
+.welcome-sub{color:#aaa;font-size:10px;letter-spacing:2px;margin-bottom:24px}
+.welcome-card .field{text-align:left;margin-bottom:13px}
+.welcome-card input{
+ background:#080808;border:1px solid #444;color:white;
+ padding:14px;border-radius:10px;width:100%;
+}
+.welcome-card input:focus{border-color:white;outline:none}
+.welcome-music{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:20px;color:#aaa;font-size:10px}
+.music-button{border:1px solid #555;background:#171717;color:white;width:39px;height:39px;border-radius:50%}
+.welcome-footer{color:#666;font-size:9px;margin-top:22px;letter-spacing:1px}
+#welcomeError{color:#ff7777;font-size:11px;margin-top:10px}
+
+/* MAIN APP */
+.app{display:flex;min-height:100vh}
+.sidebar{
+ width:245px;background:#0c0c0c;border-right:1px solid var(--line);
+ padding:25px 16px;position:fixed;inset:0 auto 0 0;
+ z-index:5;display:flex;flex-direction:column;
+}
+.brand{display:flex;align-items:center;gap:11px;padding:5px 8px 27px}
+.logo{
+ width:42px;height:42px;border:1px solid #777;
+ border-radius:13px;display:grid;place-items:center;
+ font-weight:900;font-size:14px;
+}
+.brand strong{font-size:13px;letter-spacing:1px}
+.brand small{display:block;color:var(--muted);font-size:9px;margin-top:5px;letter-spacing:1px}
+.nav-label{font-size:9px;color:#666;letter-spacing:2px;padding:15px 10px 9px}
+.nav button{
+ display:flex;align-items:center;gap:12px;width:100%;
+ border:0;background:transparent;color:#aaa;padding:13px 12px;
+ border-radius:11px;text-align:left;font-size:12px;margin:3px 0;
+}
+.nav button:hover,.nav button.active{background:white;color:#080808}
+.sidebar-bottom{margin-top:auto;border-top:1px solid var(--line);padding-top:15px}
+.main{margin-left:245px;width:calc(100% - 245px);padding:28px 35px 70px;max-width:1600px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;gap:15px}
+.topbar h1{font-size:23px;letter-spacing:-.7px}
+.topbar p{font-size:11px;color:var(--muted);margin-top:6px}
+.top-actions{display:flex;align-items:center;gap:9px}
+.user-pill{border:1px solid var(--line);padding:10px 13px;border-radius:30px;font-size:11px;color:#ddd}
+.page{display:none}.page.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.card h3{font-size:13px;margin-bottom:9px}
+.muted{color:var(--muted);font-size:11px;line-height:1.7}
+.stat{font-size:29px;font-weight:800;margin:12px 0 4px}
+.btn{
+ background:white;color:#080808;border:1px solid white;
+ border-radius:10px;padding:11px 16px;font-size:11px;font-weight:800;
+}
+.btn:hover{opacity:.85}
+.btn.outline{background:transparent;color:white;border-color:#444}
+.btn.dark{background:#222;color:white;border-color:#333}
+.btn.small{padding:8px 11px}
+.btn.full{width:100%}
+.hero{
+ background:linear-gradient(120deg,#fff,#aaa);color:#080808;
+ padding:30px;border-radius:20px;margin-bottom:18px;
+}
+.hero h2{font-size:clamp(24px,4vw,38px);max-width:500px;letter-spacing:-1.5px}
+.hero p{font-size:12px;margin:12px 0 20px;color:#333}
+.hero .btn{background:#080808;color:white;border-color:#080808}
+.hero-tag{font-size:9px;letter-spacing:2px;font-weight:900;margin-bottom:15px}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin:24px 0 13px;gap:10px}
+.section-head h2{font-size:16px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{display:flex;flex-direction:column;gap:7px}
+.field label{font-size:10px;color:#aaa}
+.field input,.field textarea,.field select,.toolbar-input{
+ width:100%;background:#090909;border:1px solid #333;
+ color:white;border-radius:9px;padding:12px;outline:none;font-size:12px;
+}
+.field input:focus,.field textarea:focus{border-color:#aaa}
+.field textarea{min-height:90px;resize:vertical}
+.field input[type=file]{padding:9px}
+.editor-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.9fr);gap:17px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line);padding:19px;border-radius:var(--radius);margin-bottom:15px}
+.panel h3{font-size:13px;margin-bottom:15px}
+.preview-wrap{background:#252525;border-radius:14px;padding:15px;overflow:auto}
+.cv-paper{
+ background:white;color:#222;min-height:550px;width:100%;
+ max-width:650px;margin:auto;padding:32px 30px;
+ font-family:Arial,sans-serif;overflow-wrap:anywhere;
+}
+.cv-head{border-bottom:2px solid #222;padding-bottom:17px;margin-bottom:17px;display:flex;gap:15px;align-items:center}
+.cv-photo{width:75px;height:75px;border-radius:50%;object-fit:cover;display:none}
+.cv-name{font-size:25px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.cv-job{font-size:12px;margin-top:6px;color:#555}
+.cv-contact{font-size:10px;color:#555;margin-top:8px;line-height:1.7}
+.cv-section{margin:18px 0}
+.cv-section h3{font-size:11px;text-transform:uppercase;letter-spacing:1.4px;border-bottom:1px solid #bbb;padding-bottom:6px;margin-bottom:9px}
+.cv-section p{font-size:11px;line-height:1.7;white-space:pre-wrap}
+.cv-section .item{font-size:11px;line-height:1.7;margin-bottom:7px;white-space:pre-wrap}
+.template-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.template{background:#111;border:1px solid #333;border-radius:13px;padding:12px;text-align:left;color:white;cursor:pointer}
+.template.selected{border:2px solid white;background:#202020}
+.template-art{height:90px;background:#eee;border-radius:7px;margin-bottom:10px;padding:10px;display:flex;gap:5px}
+.template-art span{display:block;background:#bbb;height:5px;margin:6px 0;border-radius:5px}
+.template-art .left{width:30%;background:#333}
+.template-art .right{flex:1}
+.template b{font-size:10px;display:block}
+.template small{font-size:9px;color:#888}
+.progress{height:7px;background:#333;border-radius:10px;overflow:hidden;margin:12px 0}
+.progress span{display:block;height:100%;width:0;background:white}
+.list-item{padding:12px 0;border-bottom:1px solid #292929;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.list-item strong{font-size:12px}
+.list-item small{display:block;color:#888;font-size:10px;margin-top:5px}
+.badge{font-size:9px;padding:5px 8px;border:1px solid #555;border-radius:30px;color:#ccc}
+.notice{font-size:10px;color:#999;line-height:1.7;margin-top:12px}
+.ai-card{border:1px dashed #555;background:linear-gradient(135deg,#161616,#090909)}
+.ai-label{display:inline-block;border:1px solid #777;padding:5px 9px;border-radius:20px;font-size:9px;letter-spacing:1px;margin-bottom:12px}
+.qr-box{background:white;padding:12px;display:inline-block;border-radius:10px;min-height:20px}
+.bottom-nav{display:none}
+
+/* PRINT */
+@media print{
+ body{background:white!important}
+ .sidebar,.topbar,.bottom-nav,.no-print{display:none!important}
+ .main{margin:0!important;padding:0!important;width:100%!important}
+ .page{display:none!important}
+ #page-editor{display:block!important}
+ #page-editor .editor-layout>div:first-child{display:none!important}
+ #page-editor .editor-layout{display:block!important}
+ .preview-wrap{padding:0;background:white}
+ .cv-paper{box-shadow:none;max-width:none;min-height:auto;padding:15mm}
+}
+@media(max-width:950px){
+ .main{padding:22px 20px 90px}
+ .template-grid{grid-template-columns:repeat(3,1fr)}
+ .editor-layout{grid-template-columns:1fr}
+}
+@media(max-width:650px){
+ .sidebar{display:none}
+ .main{margin:0;width:100%;padding:20px 14px 100px}
+ .topbar h1{font-size:19px}
+ .topbar{margin-bottom:22px}
+ .grid{grid-template-columns:1fr 1fr}
+ .grid .card:last-child{grid-column:1/-1}
+ .template-grid{grid-template-columns:repeat(2,1fr)}
+ .bottom-nav{
+  display:flex;position:fixed;bottom:0;left:0;right:0;
+  background:#0d0d0d;border-top:1px solid #333;z-index:10;
+  justify-content:space-around;padding:8px 3px calc(8px + env(safe-area-inset-bottom));
+ }
+ .bottom-nav button{background:none;border:0;color:#999;font-size:9px;display:grid;gap:5px;justify-items:center;padding:5px}
+ .bottom-nav button.active{color:white}
+ .bottom-nav span{font-size:17px}
+ .form-grid{grid-template-columns:1fr}
+ .field.full{grid-column:auto}
+ .hero{padding:23px}
+ .cv-paper{padding:22px 17px}
+}
+@media(max-width:450px){.welcome-card{padding:28px 19px}.welcome-card h1{font-size:22px}}
+</style>
+</head>
+
+<body>
+
+<!-- WELCOME PAGE -->
+<div id="welcomeScreen">
+ <div class="particles"></div>
+ <div class="welcome-card">
+  <img class="welcome-avatar"
+   src="https://tmpfiles.org/dl/w3AIb9VhSBro/emmyhenz_1795221487164_0cbikh.jpg"
+   alt="YTS Profile Picture"
+   onerror="this.src='https://placehold.co/150x150/111/fff?text=YTS'">
+
+  <h1>YASSER TECH</h1>
+  <p class="welcome-sub" id="welcomeSubtitle">WELCOME TO YTS CV BUILDER</p>
+
+  <div class="field" id="welcomeNameField">
+   <label>Full Name</label>
+   <input id="welcomeName" placeholder="Enter your full name">
+  </div>
+
+  <div class="field">
+   <label>Email Address</label>
+   <input id="welcomeEmail" type="email" placeholder="Enter your email">
+  </div>
+
+  <div class="field">
+   <label>Password</label>
+   <input id="welcomePassword" type="password" placeholder="Enter password">
+  </div>
+
+  <button class="btn full" id="welcomeSubmit" onclick="enterYTS()">SIGN IN →</button>
+
+  <p style="color:#888;font-size:11px;margin-top:17px">
+   <span id="welcomeSwitchText">New here?</span>
+   <a href="#" onclick="welcomeSignup();return false" style="color:white" id="welcomeSwitchLink">Create Account</a>
+  </p>
+
+  <p id="welcomeError"></p>
+
+  <div class="welcome-music">
+   <button class="music-button" id="musicButton" onclick="toggleWelcomeMusic()">▶</button>
+   <span>YTS BACKGROUND MUSIC</span>
+  </div>
+
+  <audio id="welcomeMusic" loop preload="none">
+   <source src="https://tmpfiles.org/dl/w0AybxVISm79/emmyhenz_1795221459575_8xof8s.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="welcome-footer">POWERED BY YASSER TECH SOLUTIONS</div>
+ </div>
+</div>
+
+<div class="app">
+<aside class="sidebar">
+ <div class="brand">
+  <div class="logo">YTS</div>
+  <div><strong>YTS CV BUILDER</strong><small>YASSER TECH SOLUTIONS</small></div>
+ </div>
+
+ <div class="nav-label">WORKSPACE</div>
+ <nav class="nav">
+  <button class="active" data-page="dashboard">◈ Dashboard</button>
+  <button data-page="editor">▤ CV Editor</button>
+  <button data-page="templates">▦ Templates</button>
+  <button data-page="cover">✉ Cover Letter</button>
+  <button data-page="ats">⌕ ATS Checker</button>
+  <button data-page="library">▣ My CV Library</button>
+  <button data-page="qr">▦ QR Generator</button>
+  <button data-page="portfolio">◉ Portfolio Builder</button>
+ </nav>
+
+ <div class="nav-label">MORE</div>
+ <nav class="nav">
+  <button data-page="ai">✧ AI Assistant</button>
+  <button data-page="settings">⚙ Settings</button>
+ </nav>
+
+ <div class="sidebar-bottom">
+  <p class="notice">Version 3.0<br>Powered by Yasser Tech Solutions</p>
+ </div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+ <div>
+  <h1 id="pageTitle">Dashboard</h1>
+  <p id="pageSubtitle">Build your professional future.</p>
+ </div>
+ <div class="top-actions">
+  <select id="language" class="toolbar-input" style="width:105px" onchange="setLanguage(this.value)">
+   <option value="en">English</option>
+   <option value="sw">Kiswahili</option>
+   <option value="fr">Français</option>
+   <option value="ar">العربية</option>
+   <option value="es">Español</option>
+   <option value="pt">Português</option>
+   <option value="de">Deutsch</option>
+   <option value="it">Italiano</option>
+   <option value="zh">中文</option>
+   <option value="hi">हिन्दी</option>
+  </select>
+  <span class="user-pill" id="userPill">YTS MEMBER</span>
+ </div>
+</header>
+
+<!-- DASHBOARD -->
+<section class="page active" id="page-dashboard">
+ <div class="hero">
+  <div class="hero-tag">YTS • CAREER TOOLS</div>
+  <h2>Build a CV that opens doors.</h2>
+  <p>Create a professional CV, prepare your cover letter and get ready for your next opportunity.</p>
+  <button class="btn" onclick="showPage('editor')">CREATE MY CV →</button>
+ </div>
+
+ <div class="grid">
+  <div class="card"><div class="muted">AVAILABLE TEMPLATES</div><div class="stat">20+</div><div class="muted">Professional designs</div></div>
+  <div class="card"><div class="muted">MY SAVED CVS</div><div class="stat" id="dashSaved">0</div><div class="muted">Stored on this device</div></div>
+  <div class="card"><div class="muted">LANGUAGES</div><div class="stat">10</div><div class="muted">Multilingual interface</div></div>
+ </div>
+
+ <div class="section-head"><h2>Quick actions</h2></div>
+ <div class="grid">
+  <div class="card"><h3>▤ Create a CV</h3><p class="muted">Enter your details and build your CV.</p><br><button class="btn small" onclick="showPage('editor')">Open editor</button></div>
+  <div class="card"><h3>✉ Cover Letter</h3><p class="muted">Prepare a letter for your job application.</p><br><button class="btn small" onclick="showPage('cover')">Create letter</button></div>
+  <div class="card"><h3>⌕ CV Checker</h3><p class="muted">Review your CV for common ATS keywords.</p><br><button class="btn small" onclick="showPage('ats')">Check CV</button></div>
+ </div>
+
+ <div class="section-head"><h2>AI Career Assistant</h2></div>
+ <div class="card ai-card">
+  <span class="ai-label">COMING SOON</span>
+  <h3>✧ AI CV Assistant</h3>
+  <p class="muted">Smart CV writing and career suggestions are being prepared. This feature is not active yet.</p>
+ </div>
+</section>
+
+<!-- CV EDITOR -->
+<section class="page" id="page-editor">
+ <div class="section-head"><h2>Personal information</h2><span class="badge">LIVE PREVIEW</span></div>
+
+ <div class="editor-layout">
+ <div>
+  <div class="panel">
+   <h3>01 — Profile details</h3>
+   <div class="form-grid">
+    <div class="field"><label>Full name</label><input id="name" placeholder="Your full name"></div>
+    <div class="field"><label>Professional title</label><input id="job" placeholder="e.g. Graphic Designer"></div>
+    <div class="field"><label>Email address</label><input id="email" type="email" placeholder="name@email.com"></div>
+    <div class="field"><label>Phone number</label><input id="phone" placeholder="+255..."></div>
+    <div class="field full"><label>Location</label><input id="location" placeholder="City, Country"></div>
+    <div class="field full"><label>Profile photo</label><input id="photo" type="file" accept="image/*" onchange="uploadPhoto(event)"></div>
+    <div class="field full"><label>Professional summary</label><textarea id="summary" placeholder="Write a short professional introduction..."></textarea></div>
+   </div>
+  </div>
+
+  <div class="panel">
+   <h3>02 — Work experience</h3>
+   <div class="form-grid">
+    <div class="field"><label>Job title</label><input id="experience" placeholder="Job title"></div>
+    <div class="field"><label>Company</label><input id="company" placeholder="Company name"></div>
+    <div class="field full"><label>Work period</label><input id="workperiod" placeholder="2023 - 2025"></div>
+    <div class="field full"><label>Responsibilities and achievements</label><textarea id="workdetails" placeholder="Describe your responsibilities..."></textarea></div>
+   </div>
+  </div>
+
+  <div class="panel">
+   <h3>03 — Education</h3>
+   <div class="form-grid">
+    <div class="field"><label>Qualification</label><input id="education" placeholder="e.g. Diploma"></div>
+    <div class="field"><label>School / Institution</label><input id="school" placeholder="Institution name"></div>
+    <div class="field full"><label>Year</label><input id="eduyear" placeholder="2020 - 2023"></div>
+   </div>
+  </div>
+
+  <div class="panel">
+   <h3>04 — Skills & additional information</h3>
+   <div class="form-grid">
+    <div class="field full"><label>Skills (separate with commas)</label><textarea id="skills" placeholder="Communication, teamwork, computer skills..."></textarea></div>
+    <div class="field full"><label>Languages</label><input id="languages" placeholder="English, Kiswahili, French"></div>
+    <div class="field full"><label>References</label><textarea id="references" placeholder="Available upon request..."></textarea></div>
+   </div>
+  </div>
+
+  <div class="panel">
+   <h3>05 — Save your work</h3>
+   <div class="field"><label>CV name</label><input id="cvTitle" placeholder="My Professional CV"></div><br>
+   <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn" onclick="saveCV()">SAVE CV</button>
+    <button class="btn outline" onclick="window.print()">DOWNLOAD / PRINT PDF</button>
+    <button class="btn outline" onclick="resetCV()">RESET</button>
+   </div>
+   <p class="notice">PDF export uses your browser's print function. Select “Save as PDF” in print options.</p>
+  </div>
+ </div>
+
+ <div>
+  <div class="section-head no-print"><h2>Live CV preview</h2><button class="btn small outline" onclick="showPage('templates')">Change template</button></div>
+  <div class="preview-wrap">
+   <div class="cv-paper" id="cvPreview">
+    <div class="cv-head">
+     <img class="cv-photo" id="previewPhoto">
+     <div>
+      <div class="cv-name" id="pName">YOUR NAME</div>
+      <div class="cv-job" id="pJob">Professional Title</div>
+      <div class="cv-contact" id="pContact">Email • Phone • Location</div>
+     </div>
+    </div>
+    <div class="cv-section"><h3>Professional Profile</h3><p id="pSummary">Your professional summary will appear here.</p></div>
+    <div class="cv-section"><h3>Work Experience</h3><div class="item" id="pWork">Your work experience will appear here.</div></div>
+    <div class="cv-section"><h3>Education</h3><div class="item" id="pEducation">Your education will appear here.</div></div>
+    <div class="cv-section"><h3>Skills</h3><p id="pSkills">Your skills will appear here.</p></div>
+    <div class="cv-section"><h3>Languages</h3><p id="pLanguages">Your languages will appear here.</p></div>
+    <div class="cv-section"><h3>References</h3><p id="pReferences">Available upon request.</p></div>
+   </div>
+  </div>
+ </div>
+ </div>
+</section>
+
+<!-- TEMPLATES -->
+<section class="page" id="page-templates">
+ <div class="card" style="margin-bottom:18px">
+  <h3>Choose your CV design</h3>
+  <p class="muted">Select a style to update your CV preview.</p>
+ </div>
+ <div class="template-grid" id="templateGrid"></div>
+</section>
+
+<!-- COVER LETTER -->
+<section class="page" id="page-cover">
+ <div class="card">
+  <h3>Cover Letter Builder</h3>
+  <p class="muted">Create and edit a letter to accompany your CV.</p><br>
+  <div class="form-grid">
+   <div class="field"><label>Your name</label><input id="coverName" placeholder="Your name"></div>
+   <div class="field"><label>Company name</label><input id="coverCompany" placeholder="Company name"></div>
+   <div class="field"><label>Job title</label><input id="coverJob" placeholder="Position applying for"></div>
+   <div class="field"><label>Hiring manager</label><input id="coverManager" placeholder="Hiring manager (optional)"></div>
+   <div class="field full"><label>Your experience and strengths</label><textarea id="coverStrength" placeholder="Describe your skills and experience..."></textarea></div>
+   <div class="field full"><label>Cover letter</label><textarea id="coverText" rows="12" placeholder="Your cover letter will appear here..."></textarea></div>
+  </div><br>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+   <button class="btn" onclick="generateCover()">GENERATE DRAFT</button>
+   <button class="btn outline" onclick="printCover()">PRINT / SAVE PDF</button>
+   <button class="btn outline" onclick="copyCover()">COPY TEXT</button>
+  </div>
+  <p class="notice">The generated draft is an editable template, not AI-generated content.</p>
+ </div>
+</section>
+
+<!-- ATS CHECKER -->
+<section class="page" id="page-ats">
+ <div class="card">
+  <h3>ATS CV Checker</h3>
+  <p class="muted">Check your CV text for common sections and job-related keywords.</p><br>
+  <div class="field"><label>Paste your CV text</label><textarea id="atsText" rows="12" placeholder="Paste your CV content here..."></textarea></div><br>
+  <div class="field"><label>Target job keywords (optional)</label><input id="atsKeywords" placeholder="e.g. customer service, Excel, communication"></div><br>
+  <button class="btn" onclick="checkATS()">CHECK MY CV</button>
+  <div id="atsResult" style="margin-top:20px"></div>
+  <p class="notice">This is a basic checklist, not a real ATS platform or a guarantee that an employer's system will accept your CV.</p>
+ </div>
+</section>
+
+<!-- LIBRARY -->
+<section class="page" id="page-library">
+ <div class="section-head">
+  <h2>My CV Library</h2>
+  <button class="btn small" onclick="showPage('editor')">+ New CV</button>
+ </div>
+ <div class="card">
+  <p class="muted">Your saved CVs are stored in this browser on this device.</p>
+  <div id="libraryList" style="margin-top:15px"></div>
+ </div>
+</section>
+
+<!-- QR -->
+<section class="page" id="page-qr">
+ <div class="card">
+  <h3>CV QR Code Generator</h3>
+  <p class="muted">Create a QR code containing your contact and CV summary information.</p><br>
+  <div class="form-grid">
+   <div class="field"><label>Full name</label><input id="qrName" placeholder="Full name"></div>
+   <div class="field"><label>Email</label><input id="qrEmail" placeholder="Email"></div>
+   <div class="field"><label>Phone</label><input id="qrPhone" placeholder="Phone"></div>
+   <div class="field"><label>Professional title</label><input id="qrJob" placeholder="Job title"></div>
+   <div class="field full"><label>Short profile</label><textarea id="qrSummary" placeholder="Short professional summary"></textarea></div>
+  </div><br>
+  <button class="btn" onclick="makeQR()">GENERATE QR</button>
+  <button class="btn outline" onclick="downloadQR()">DOWNLOAD QR</button>
+  <div style="margin-top:20px"><div class="qr-box" id="qrCode"></div></div>
+  <p class="notice">This QR stores the information you enter. It does not create a public online CV link. QR generation requires internet access to load the QR library.</p>
+ </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section class="page" id="page-portfolio">
+ <div class="card">
+  <h3>Personal Portfolio Builder</h3>
+  <p class="muted">Create a simple portfolio profile preview.</p><br>
+  <div class="form-grid">
+   <div class="field"><label>Your name</label><input id="portName" placeholder="Your name"></div>
+   <div class="field"><label>Your profession</label><input id="portJob" placeholder="Your profession"></div>
+   <div class="field full"><label>About me</label><textarea id="portAbout" placeholder="Introduce yourself..."></textarea></div>
+   <div class="field full"><label>Projects / Work samples</label><textarea id="portProjects" placeholder="List your projects..."></textarea></div>
+   <div class="field"><label>Email</label><input id="portEmail" placeholder="Email"></div>
+   <div class="field"><label>Website / Social link</label><input id="portLink" placeholder="https://..."></div>
+  </div><br>
+  <button class="btn" onclick="makePortfolio()">GENERATE PORTFOLIO</button>
+  <button class="btn outline" onclick="printPortfolio()">PRINT / SAVE PDF</button>
+  <div class="preview-wrap" style="margin-top:20px">
+   <div id="portfolioPreview" class="cv-paper">
+    <h1>YOUR PORTFOLIO</h1>
+    <p style="margin-top:15px">Enter your details and generate your portfolio preview.</p>
+   </div>
+  </div>
+  <p class="notice">This creates a preview inside this app. Publishing a public portfolio requires hosting.</p>
+ </div>
+</section>
+
+<!-- AI -->
+<section class="page" id="page-ai">
+ <div class="card ai-card">
+  <span class="ai-label">COMING SOON</span>
+  <h2 style="font-size:26px;margin:10px 0">✧ AI Career Assistant</h2>
+  <p class="muted">We're preparing smarter tools to help users improve CV descriptions, write professional summaries and prepare for interviews.</p><br>
+  <button class="btn outline" disabled style="opacity:.5">NOT AVAILABLE YET</button>
+ </div>
+</section>
+
+<!-- SETTINGS -->
+<section class="page" id="page-settings">
+ <div class="card">
+  <h3>Settings</h3><br>
+  <div class="list-item">
+   <div><strong>Language</strong><small>Choose your preferred interface language.</small></div>
+   <select class="toolbar-input" onchange="setLanguage(this.value)" id="language2">
+    <option value="en">English</option><option value="sw">Kiswahili</option><option value="fr">Français</option><option value="ar">العربية</option><option value="es">Español</option><option value="pt">Português</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="zh">中文</option><option value="hi">हिन्दी</option>
+   </select>
+  </div>
+  <div class="list-item">
+   <div><strong>Clear local CV library</strong><small>Delete saved CVs from this browser.</small></div>
+   <button class="btn small outline" onclick="clearLibrary()">CLEAR</button>
+  </div>
+  <p class="notice">This version has a local interface login only. It does not provide secure authentication, cloud accounts or a server database.</p>
+ </div>
+</section>
+</main>
+</div>
+
+<nav class="bottom-nav">
+ <button class="active" data-page="dashboard"><span>◈</span>Home</button>
+ <button data-page="editor"><span>▤</span>Editor</button>
+ <button data-page="templates"><span>▦</span>Designs</button>
+ <button data-page="library"><span>▣</span>Library</button>
+ <button data-page="settings"><span>⚙</span>Settings</button>
+</nav>
+
+<script>
+const $=id=>document.getElementById(id);
+const fields=[
+'name','job','email','phone','location','summary',
+'experience','company','workperiod','workdetails',
+'education','school','eduyear','skills','languages',
+'references','cvTitle'
+];
+
+let photoData='';
+let selectedTemplate=0;
+let authMode='login';
+let currentCV=null;
+
+function escapeHTML(s=''){
+ return String(s).replace(/[&<>"']/g,c=>({
+ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+ }[c]));
+}
+function value(id){return $(id).value.trim();}
+
+/* WELCOME LOGIN */
+function welcomeSignup(){
+ authMode='signup';
+ $('welcomeNameField').classList.remove('hidden');
+ $('welcomeSubmit').textContent='CREATE ACCOUNT →';
+ $('welcomeSubtitle').textContent='CREATE YOUR YTS ACCOUNT';
+ $('welcomeSwitchText').textContent='Already registered?';
+ $('welcomeSwitchLink').textContent='Sign in';
+ $('welcomeSwitchLink').onclick=function(e){
+  e.preventDefault();welcomeLogin();
+ };
+ $('welcomeError').textContent='';
+}
+function welcomeLogin(){
+ authMode='login';
+ $('welcomeNameField').classList.add('hidden');
+ $('welcomeSubmit').textContent='SIGN IN →';
+ $('welcomeSubtitle').textContent='WELCOME TO YTS CV BUILDER';
+ $('welcomeSwitchText').textContent='New here?';
+ $('welcomeSwitchLink').textContent='Create Account';
+ $('welcomeSwitchLink').onclick=function(e){
+  e.preventDefault();welcomeSignup();
+ };
+ $('welcomeError').textContent='';
+}
+function enterYTS(){
+ const name=$('welcomeName').value.trim();
+ const email=$('welcomeEmail').value.trim();
+ const password=$('welcomePassword').value;
+ const error=$('welcomeError');
+
+ if(!email||!password||(authMode==='signup'&&!name)){
+  error.textContent='Please complete all required fields.';
+  return;
+ }
+ if(!email.includes('@')){
+  error.textContent='Enter a valid email address.';
+  return;
+ }
+ if(password.length<4){
+  error.textContent='Password must have at least 4 characters.';
+  return;
+ }
+
+ const displayName=name||(email.split('@')[0]);
+ $('userPill').textContent=displayName.toUpperCase();
+ $('welcomeScreen').style.display='none';
+ showPage('dashboard');
+}
+
+/* MUSIC */
+function toggleWelcomeMusic(){
+ const music=$('welcomeMusic');
+ const button=$('musicButton');
+ if(music.paused){
+  music.play().then(()=>button.textContent='Ⅱ').catch(()=>{
+   alert('Music could not play. Check the audio link or internet connection.');
+  });
+ }else{
+  music.pause();
+  button.textContent='▶';
+ }
+}
+
+/* NAVIGATION */
+function showPage(page){
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+ $('page-'+page).classList.add('active');
+
+ document.querySelectorAll('[data-page]').forEach(b=>{
+  b.classList.toggle('active',b.dataset.page===page);
+ });
+
+ const names={
+  dashboard:'Dashboard',editor:'CV Editor',templates:'CV Templates',
+  cover:'Cover Letter Builder',ats:'ATS CV Checker',
+  library:'My CV Library',qr:'QR Generator',
+  portfolio:'Portfolio Builder',ai:'AI Assistant',settings:'Settings'
+ };
+
+ $('pageTitle').textContent=names[page]||'YTS CV Builder';
+ $('pageSubtitle').textContent=
+  page==='dashboard'?'Build your professional future.':
+  'YTS CV BUILDER • YASSER TECH SOLUTIONS';
+
+ if(page==='library')renderLibrary();
+ if(page==='templates')renderTemplates();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('[data-page]').forEach(b=>{
+ b.addEventListener('click',()=>showPage(b.dataset.page));
+});
+
+/* CV PREVIEW */
+function updatePreview(){
+ $('pName').textContent=value('name')||'YOUR NAME';
+ $('pJob').textContent=value('job')||'Professional Title';
+
+ $('pContact').textContent=[
+  value('email'),value('phone'),value('location')
+ ].filter(Boolean).join(' • ')||'Email • Phone • Location';
+
+ $('pSummary').textContent=value('summary')||'Your professional summary will appear here.';
+
+ $('pWork').textContent=[
+  value('experience'),value('company'),
+  value('workperiod'),value('workdetails')
+ ].filter(Boolean).join(' | ')||'Your work experience will appear here.';
+
+ $('pEducation').textContent=[
+  value('education'),value('school'),value('eduyear')
+ ].filter(Boolean).join(' | ')||'Your education will appear here.';
+
+ $('pSkills').textContent=value('skills')||'Your skills will appear here.';
+ $('pLanguages').textContent=value('languages')||'Your languages will appear here.';
+ $('pReferences').textContent=value('references')||'Available upon request.';
+}
+fields.forEach(id=>$(id).addEventListener('input',updatePreview));
+
+function uploadPhoto(e){
+ const file=e.target.files[0];
+ if(!file)return;
+ if(!file.type.startsWith('image/'))return alert('Please select an image.');
+ if(file.size>3*1024*1024)return alert('Choose an image smaller than 3MB.');
+ const reader=new FileReader();
+ reader.onload=()=>{
+  photoData=reader.result;
+  $('previewPhoto').src=photoData;
+  $('previewPhoto').style.display='block';
+ };
+ reader.readAsDataURL(file);
+}
+
+/* TEMPLATES */
+const titles=[
+ 'Classic Professional','Luxury Black','Minimal White','Modern Executive',
+ 'Corporate Blue','Elegant Serif','Creative Split','Simple ATS',
+ 'Bold Header','Academic CV','Modern Grid','Professional Grey',
+ 'Clean Sidebar','Premium Gold','Swiss Minimal','Tech Specialist',
+ 'Designer Portfolio','Compact One Page','Classic Two Column','Executive Elite'
+];
+
+const templateStyles=[
+ {bg:'#fff',color:'#222',head:'#222',font:'Arial',align:'left'},
+ {bg:'#111',color:'#fff',head:'#fff',font:'Georgia',align:'left'},
+ {bg:'#fff',color:'#333',head:'#777',font:'Arial',align:'left'},
+ {bg:'#fff',color:'#182333',head:'#182333',font:'Arial',align:'left'},
+ {bg:'#fff',color:'#16304c',head:'#24619b',font:'Arial',align:'left'},
+ {bg:'#fff',color:'#333',head:'#333',font:'Georgia',align:'center'},
+ {bg:'#fff',color:'#222',head:'#222',font:'Arial',align:'left'},
+ {bg:'#fff',color:'#222',head:'#222',font:'Arial',align:'left'},
+ {bg:'#fff',color:'#222',head:'#111',font:'Arial',align:'left'},
+ {bg:'#fff',color:'#222',head:'#444',font:'Georgia',align:'left'},
+ {bg:'#fff',color:'#333',head:'#444',font:'Arial',align:'left'},
+ {bg:'#f4f4f4',color:'#333',head:'#555',font:'Arial',align:'left'},
+ {bg:'#fff',color:'#222',head:'#333',font:'Arial',align:'left'},
+ {bg:'#fff',color:'#222',head:'#94743a',font:'Georgia',align:'left'},
+ {bg:'#fff',color:'#222',head:'#111',font:'Arial',align:'left'},
+ {bg:'#fff',color:'#172333',head:'#172333',font:'Arial',align:'left'},
+ {bg:'#fff',color:'#222',head:'#222',font:'Georgia',align:'center'},
+ {bg:'#fff',color:'#222',head:'#333',font:'Arial',align:'left'},
+ {bg:'#fff',color:'#222',head:'#333',font:'Georgia',align:'left'},
+ {bg:'#fff',color:'#222',head:'#111',font:'Georgia',align:'center'}
+];
+
+function applyTemplate(i){
+ selectedTemplate=i;
+ const t=templateStyles[i];
+ const paper=$('cvPreview');
+
+ paper.style.background=t.bg;
+ paper.style.color=t.color;
+ paper.style.fontFamily=t.font;
+
+ $('cvPreview').querySelectorAll('.cv-section h3').forEach(h=>{
+  h.style.color=t.head;
+ });
+ $('pName').style.color=t.head;
+ $('pName').style.textAlign=t.align;
+
+ document.querySelectorAll('.template').forEach((el,n)=>{
+  el.classList.toggle('selected',n===i);
+ });
+}
+function renderTemplates(){
+ $('templateGrid').innerHTML=titles.map((name,i)=>`
+  <button class="template ${i===selectedTemplate?'selected':''}" onclick="applyTemplate(${i})">
+   <div class="template-art">
+    <div class="left"></div>
+    <div class="right">
+     <span style="width:80%"></span>
+     <span style="width:55%"></span>
+     <span style="width:90%;margin-top:17px"></span>
+     <span style="width:65%"></span>
+    </div>
+   </div>
+   <b>${String(i+1).padStart(2,'0')} · ${name}</b>
+   <small>Professional layout</small>
+  </button>
+ `).join('');
+}
+renderTemplates();
+
+/* CV LIBRARY */
+function getCV(){
+ const data={};
+ fields.forEach(id=>data[id]=$(id).value);
+ data.photo=photoData;
+ data.template=selectedTemplate;
+ data.savedAt=new Date().toLocaleString();
+ return data;
+}
+function getLibrary(){
+ try{return JSON.parse(localStorage.getItem('yts_cv_library')||'[]')}
+ catch(e){return []}
+}
+function saveCV(){
+ const data=getCV();
+ data.id=currentCV||Date.now().toString();
+
+ if(!data.name&&!data.job){
+  return alert('Please enter your name or professional title first.');
+ }
+
+ let lib=getLibrary();
+ const index=lib.findIndex(x=>x.id===data.id);
+ if(index>=0)lib[index]=data;
+ else lib.unshift(data);
+
+ try{
+  localStorage.setItem('yts_cv_library',JSON.stringify(lib));
+  currentCV=data.id;
+  refreshCounts();
+  alert('Your CV has been saved on this device!');
+ }catch(e){
+  alert('Storage is full. Try a smaller photo or remove old CVs.');
+ }
+}
+function loadCV(data){
+ fields.forEach(id=>$(id).value=data[id]||'');
+ photoData=data.photo||'';
+
+ if(photoData){
+  $('previewPhoto').src=photoData;
+  $('previewPhoto').style.display='block';
+ }else{
+  $('previewPhoto').style.display='none';
+ }
+
+ applyTemplate(Number(data.template)||0);
+ updatePreview();
+ showPage('editor');
+}
+function renderLibrary(){
+ const lib=getLibrary();
+
+ $('libraryList').innerHTML=lib.length?lib.map(x=>`
+  <div class="list-item">
+   <div>
+    <strong>${escapeHTML(x.cvTitle||x.name||'Untitled CV')}</strong>
+    <small>${escapeHTML(x.job||'No job title')} • ${escapeHTML(x.savedAt||'')}</small>
+   </div>
+   <div style="display:flex;gap:6px">
+    <button class="btn small" onclick="openSaved('${x.id}')">OPEN</button>
+    <button class="btn small outline" onclick="deleteCV('${x.id}')">DELETE</button>
+   </div>
+  </div>
+ `).join(''):'<p class="muted">No saved CVs yet. Create a CV and press Save CV.</p>';
+}
+function openSaved(id){
+ const x=getLibrary().find(v=>v.id===id);
+ if(x){currentCV=id;loadCV(x)}
+}
+function deleteCV(id){
+ if(!confirm('Delete this saved CV?'))return;
+ localStorage.setItem('yts_cv_library',JSON.stringify(getLibrary().filter(x=>x.id!==id)));
+ renderLibrary();refreshCounts();
+}
+function clearLibrary(){
+ if(!confirm('Delete all saved CVs from this browser?'))return;
+ localStorage.removeItem('yts_cv_library');
+ refreshCounts();renderLibrary();
+}
+function refreshCounts(){
+ $('dashSaved').textContent=getLibrary().length;
+}
+function resetCV(){
+ if(!confirm('Clear all CV fields?'))return;
+ fields.forEach(id=>$(id).value='');
+ photoData='';currentCV=null;
+ $('previewPhoto').style.display='none';
+ updatePreview();
+}
+refreshCounts();
+
+/* COVER LETTER */
+function generateCover(){
+ const name=value('coverName')||value('name')||'[Your Name]';
+ const company=value('coverCompany')||'[Company Name]';
+ const job=value('coverJob')||'[Position]';
+ const manager=value('coverManager')||'Hiring Manager';
+ const strengths=value('coverStrength')||value('summary')||'[Your relevant experience and skills]';
+
+ $('coverText').value=
+ `${name}
+
+Dear ${manager},
+
+I am writing to express my interest in the ${job} position at ${company}. I believe my background and professional skills make me a suitable candidate for this opportunity.
+
+${strengths}
+
+I would welcome the opportunity to discuss how my experience and abilities could contribute to your team. Thank you for considering my application.
+
+Yours sincerely,
+${name}
+${value('email')}
+${value('phone')}`;
+}
+function printCover(){
+ const content=value('coverText');
+ if(!content)return alert('Generate or write your cover letter first.');
+ const w=window.open('','_blank');
+ if(!w)return alert('Allow pop-ups to print the cover letter.');
+ w.document.write('<html><head><title>Cover Letter</title><style>body{font-family:Arial;padding:50px;white-space:pre-wrap;line-height:1.8}</style></head><body>'+escapeHTML(content)+'</body></html>');
+ w.document.close();w.focus();w.print();
+}
+function copyCover(){
+ if(!value('coverText'))return alert('Write your cover letter first.');
+ if(!navigator.clipboard)return alert('Copy is not supported by this browser.');
+ navigator.clipboard.writeText(value('coverText'))
+ .then(()=>alert('Copied!'))
+ .catch(()=>alert('Could not copy text.'));
+}
+
+/* ATS CHECKER */
+function checkATS(){
+ const text=value('atsText').toLowerCase();
+ if(!text)return alert('Paste your CV text first.');
+
+ const checks=[
+  ['Contact information',/email|@|phone|mobile|contact/],
+  ['Professional summary',/summary|profile|objective/],
+  ['Work experience',/experience|employment|work history/],
+  ['Education',/education|degree|diploma|university|college/],
+  ['Skills',/skills|competencies|technical/],
+  ['Achievements',/achievement|results|improved|increased|managed/]
+ ];
+
+ const results=checks.map(([name,regex])=>({name,ok:regex.test(text)}));
+ const keywords=value('atsKeywords').split(',').map(x=>x.trim()).filter(Boolean);
+ const found=keywords.filter(k=>text.includes(k.toLowerCase()));
+ const score=Math.round(results.filter(x=>x.ok).length/checks.length*100);
+
+ $('atsResult').innerHTML=`
+  <div class="card">
+   <h2>${score}% section coverage</h2>
+   <div class="progress"><span style="width:${score}%"></span></div>
+   ${results.map(r=>`
+    <div class="list-item">
+     <strong>${r.name}</strong>
+     <span class="badge">${r.ok?'FOUND':'MISSING'}</span>
+    </div>
+   `).join('')}
+   <br><h3>Target keywords</h3>
+   <p class="muted">${
+    keywords.length?
+    found.length+' of '+keywords.length+' keywords found: '+found.map(escapeHTML).join(', '):
+    'No target keywords supplied.'
+   }</p>
+  </div>`;
+}
+
+/* QR GENERATOR */
+function makeQR(){
+ if(!window.QRCode)return alert('QR library is not loaded. Connect to the internet and refresh.');
+
+ const info=[
+  'Name: '+value('qrName'),
+  'Title: '+value('qrJob'),
+  'Email: '+value('qrEmail'),
+  'Phone: '+value('qrPhone'),
+  'Profile: '+value('qrSummary')
+ ].filter(x=>!x.endsWith(': ')).join('\n');
+
+ if(!info.trim())return alert('Enter some information first.');
+
+ $('qrCode').innerHTML='';
+ new QRCode($('qrCode'),{
+  text:info,width:190,height:190,
+  correctLevel:QRCode.CorrectLevel.M
+ });
+}
+function downloadQR(){
+ const canvas=$('qrCode').querySelector('canvas');
+ const img=$('qrCode').querySelector('img');
+ const url=canvas?canvas.toDataURL('image/png'):img?.src;
+
+ if(!url)return alert('Generate your QR code first.');
+
+ const a=document.createElement('a');
+ a.href=url;a.download='YTS-CV-QR.png';a.click();
+}
+
+/* PORTFOLIO */
+function makePortfolio(){
+ const name=value('portName')||'Your Name';
+ const job=value('portJob')||'Your Profession';
+ const about=value('portAbout')||'Add your introduction here.';
+ const projects=value('portProjects')||'Add your projects here.';
+ const email=value('portEmail');
+ const link=value('portLink');
+
+ $('portfolioPreview').innerHTML=`
+  <div style="text-align:center;padding:25px 0;border-bottom:2px solid #222">
+   <small>PERSONAL PORTFOLIO</small>
+   <h1 style="font-size:30px;margin:15px 0">${escapeHTML(name)}</h1>
+   <h3>${escapeHTML(job)}</h3>
+   <p style="margin-top:10px;font-size:12px">
+    ${escapeHTML(email)} ${link?' • '+escapeHTML(link):''}
+   </p>
+  </div>
+  <div class="cv-section">
+   <h3>ABOUT ME</h3><p>${escapeHTML(about)}</p>
+  </div>
+  <div class="cv-section">
+   <h3>PROJECTS & EXPERIENCE</h3><p>${escapeHTML(projects)}</p>
+  </div>
+  <div style="margin-top:40px;text-align:center;font-size:10px">
+   POWERED BY YASSER TECH SOLUTIONS
+  </div>`;
+}
+function printPortfolio(){
+ const content=$('portfolioPreview').innerHTML;
+ const w=window.open('','_blank');
+ if(!w)return alert('Allow pop-ups to print the portfolio.');
+ w.document.write('<html><head><title>Portfolio</title><style>body{font-family:Arial;padding:35px;color:#222}p{line-height:1.7}</style></head><body>'+content+'</body></html>');
+ w.document.close();w.focus();w.print();
+}
+
+/* LANGUAGE SELECTOR */
+const translations={
+ en:{dashboard:'Dashboard',editor:'CV Editor',templates:'CV Templates',cover:'Cover Letter',ats:'ATS Checker',library:'My CV Library',qr:'QR Generator',portfolio:'Portfolio Builder',ai:'AI Assistant',settings:'Settings'},
+ sw:{dashboard:'Dashibodi',editor:'Hariri CV',templates:'Miundo ya CV',cover:'Barua ya Maombi',ats:'Kikagua ATS',library:'CV Zangu',qr:'Tengeneza QR',portfolio:'Portfolio',ai:'Msaidizi wa AI',settings:'Mipangilio'},
+ fr:{dashboard:'Tableau de bord',editor:'Éditeur CV',templates:'Modèles CV',cover:'Lettre de motivation',ats:'Vérificateur ATS',library:'Mes CV',qr:'Générateur QR',portfolio:'Portfolio',ai:'Assistant IA',settings:'Paramètres'},
+ ar:{dashboard:'لوحة التحكم',editor:'محرر السيرة',templates:'قوالب السيرة',cover:'خطاب التقديم',ats:'فاحص ATS',library:'سيرتي الذاتية',qr:'رمز QR',portfolio:'معرض الأعمال',ai:'مساعد الذكاء',settings:'الإعدادات'},
+ es:{dashboard:'Panel',editor:'Editor CV',templates:'Plantillas CV',cover:'Carta de presentación',ats:'Verificador ATS',library:'Mis CV',qr:'Generador QR',portfolio:'Portafolio',ai:'Asistente IA',settings:'Configuración'},
+ pt:{dashboard:'Painel',editor:'Editor CV',templates:'Modelos CV',cover:'Carta de apresentação',ats:'Verificador ATS',library:'Meus CV',qr:'Gerador QR',portfolio:'Portfólio',ai:'Assistente IA',settings:'Configurações'},
+ de:{dashboard:'Dashboard',editor:'Lebenslauf Editor',templates:'Vorlagen',cover:'Anschreiben',ats:'ATS Prüfer',library:'Meine Lebensläufe',qr:'QR Generator',portfolio:'Portfolio',ai:'KI Assistent',settings:'Einstellungen'},
+ it:{dashboard:'Dashboard',editor:'Editor CV',templates:'Modelli CV',cover:'Lettera di presentazione',ats:'Controllo ATS',library:'I miei CV',qr:'Generatore QR',portfolio:'Portfolio',ai:'Assistente IA',settings:'Impostazioni'},
+ zh:{dashboard:'仪表板',editor:'简历编辑器',templates:'简历模板',cover:'求职信',ats:'ATS检查',library:'我的简历',qr:'二维码生成器',portfolio:'作品集',ai:'AI助手',settings:'设置'},
+ hi:{dashboard:'डैशबोर्ड',editor:'CV संपादक',templates:'CV टेम्पलेट',cover:'कवर लेटर',ats:'ATS चेकर',library:'मेरे CV',qr:'QR जनरेटर',portfolio:'पोर्टफोलियो',ai:'AI सहायक',settings:'सेटिंग्स'}
+};
+
+function setLanguage(lang){
+ $('language').value=lang;
+ $('language2').value=lang;
+ document.querySelectorAll('[data-page]').forEach(b=>{
+  const t=translations[lang];
+  if(!t)return;
+  const icons={
+   dashboard:'◈ ',editor:'▤ ',templates:'▦ ',
+   cover:'✉ ',ats:'⌕ ',library:'▣ ',
+   qr:'▦ ',portfolio:'◉ ',ai:'✧ ',settings:'⚙ '
+  };
+  b.textContent=icons[b.dataset.page]+t[b.dataset.page];
+ });
+}
+
+/* START */
+updatePreview();
+refreshCounts();
+</script>
+</body>
+</html>
